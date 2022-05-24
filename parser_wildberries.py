@@ -1,6 +1,6 @@
+# импортируем библиотеки для создания парсера
 import requests
 from bs4 import BeautifulSoup
-import re
 import json
 import lxml
 
@@ -11,6 +11,7 @@ HEADERS = {
 }
 
 
+# Делаем запрос на страницу и сохраняем ответ в файл
 def get_html(URL, HEADERS):
     response = requests.get(URL, headers=HEADERS)
 
@@ -19,6 +20,7 @@ def get_html(URL, HEADERS):
     return response.text
 
 
+# Присваиваем сохраненный файл на диске переменной
 def get_content():
     with open('response_dates/parser_wildberries.html', 'r', encoding='utf-8') as f:
         content = f.read()
@@ -26,6 +28,7 @@ def get_content():
     return content
 
 
+# Создаем объект класса BeautifulSoup, находим все ссылки на каталог и записываем их в файл
 def get_data(content):
     dates = {}
     repl_items = ['-', ' ']
@@ -42,6 +45,7 @@ def get_data(content):
         json.dump(dates, f, ensure_ascii=False, indent=4)
 
 
+# Получает ссылку выбранного подкаталога
 def get_links():
     with open('links_menu-burger/wildberries.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -49,8 +53,20 @@ def get_links():
     print("Выберите одну из следующих подкатегорий:")
     keys = list(data.keys())
     print(keys)
-    subcategory = input('\nВведите подкатегорию: ')
-    print(data[subcategory.title()])
+    subcategory = input('\nВведите подкатегорию:')
+    result = data[subcategory.title()]
+
+    try:
+        resp = requests.get(result, headers=HEADERS)
+        with open(f'response_dates/{subcategory.title()}.html', 'w', encoding='utf-8') as f:
+            f.write(resp.text)
+
+    except Exception as e:
+        print(f'Ошибка: {e}')
+
+    return result, subcategory
+
+
 
 
 def main():
