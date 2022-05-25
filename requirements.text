@@ -1,1 +1,6 @@
+python == 3.10.0
+grequests == 0.6.0
+requests == 2.27.1
+beautifulsoup4 == 4.11.1
+lxml == 4.8.0
 
